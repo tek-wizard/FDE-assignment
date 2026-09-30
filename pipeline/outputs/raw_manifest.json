@@ -1,0 +1,18 @@
+{
+  "appointments": {
+    "rows": 110527,
+    "sha256": "9132d3e7d0246617df9041d3764f20ad6f08e7b0d9f0997fa254fc5e52eda27d",
+    "size_bytes": 10739535,
+    "url": "https://raw.githubusercontent.com/alteryx/predict-appointment-noshow/master/data/KaggleV2-May-2016.csv"
+  },
+  "holidays": {
+    "records": 14,
+    "sha256": "567f7776fbd3873428a0fed9c14f8a62003470be4d79c36babd8ff7b37880700",
+    "url": "https://date.nager.at/api/v3/PublicHolidays/2016/BR"
+  },
+  "weather": {
+    "records": 41,
+    "sha256": "03723002d1e106b580c7deff18220a1c14e98731c83698d68ae967392c347a3d",
+    "url": "https://archive-api.open-meteo.com/v1/archive?latitude=-20.32&longitude=-40.34&daily=precipitation_sum%2Ctemperature_2m_max&timezone=America%2FSao_Paulo&start_date=2016-04-29&end_date=2016-06-08"
+  }
+}

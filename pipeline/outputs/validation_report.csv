@@ -1,0 +1,13 @@
+rule_id,rule,severity,rows_flagged,pct_of_rows,action
+F01,appointment_before_booking,FAIL,5,0.005,excluded from all metrics
+F02,age_negative,FAIL,1,0.001,excluded from all metrics
+F03,duplicate_appointment_id,FAIL,0,0.0,excluded from all metrics (every copy)
+F04,outcome_not_yes_no,FAIL,0,0.0,excluded from all metrics
+F05,flag_not_0_1,FAIL,0,0.0,excluded from all metrics
+W01,age_over_100,WARN,7,0.006,"kept, left out of age breakdowns"
+W02,patient_id_not_integer,WARN,5,0.005,"kept, left out of the repeat no-show metric"
+W03,sms_below_min_lead,WARN,0,0.0,"kept, not counted as reminder-eligible"
+I01,handcap_over_1,INFO,199,0.18,"no action, not used by any metric"
+I02,weekend_appointment,INFO,39,0.035,no action
+I03,same_patient_same_day,INFO,16200,14.657,"counted per slot, noted as a limitation"
+I04,age_zero,INFO,3539,3.202,no action

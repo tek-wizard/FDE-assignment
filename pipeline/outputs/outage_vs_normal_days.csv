@@ -1,0 +1,5 @@
+lead_band,appointments,no_show_pct_normal_days,no_show_pct_outage_days,gap_points
+3-7 days,20235,24.42,26.32,1.9
+8-14 days,12016,28.79,34.61,5.83
+15-30 days,17371,31.19,36.72,5.53
+31+ days,10378,31.66,36.81,5.15

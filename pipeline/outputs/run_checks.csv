@@ -1,0 +1,11 @@
+scope,check,detail,status
+file,raw_checksum_matches_pinned,9132d3e7d024,PASS
+file,rows_read_equal_expected,110527 read vs 110527,PASS
+file,required_columns_present,all present,PASS
+file,no_nulls_in_required_columns,0 null cells,PASS
+file,fail_share_below_limit,0.005% of rows hit a FAIL rule (limit 2.000%),PASS
+file,raw_equals_valid_plus_excluded,110527 = 110521 + 6,PASS
+file,every_appointment_joins_date_and_patient,100% joined,PASS
+day,weekdays_without_appointments_explained,"holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27']",WARN
+day,reminder_coverage_above_outage_level,"7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20']",WARN
+day,weather_covers_every_appointment_day,27 of 27 days,PASS

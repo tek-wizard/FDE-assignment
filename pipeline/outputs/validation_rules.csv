@@ -1,0 +1,13 @@
+rule_id,rule,severity,check,business_reason,action
+F01,appointment_before_booking,FAIL,appointment date is earlier than the booking date,a slot can't be booked after it happened; lead time and reminder eligibility are both wrong,excluded from all metrics
+F02,age_negative,FAIL,Age < 0,"not a real patient record, probably a test or typo row",excluded from all metrics
+F03,duplicate_appointment_id,FAIL,AppointmentID appears more than once,one slot would be counted twice in the no-show rate,excluded from all metrics (every copy)
+F04,outcome_not_yes_no,FAIL,No-show is not 'Yes' or 'No',the outcome is the KPI; without it the row can't be counted,excluded from all metrics
+F05,flag_not_0_1,FAIL,"Scholarship, Hipertension, Diabetes, Alcoholism or SMS_received not 0/1",SMS_received is the intervention; a bad value would put the row in the wrong group,excluded from all metrics
+W01,age_over_100,WARN,Age > 100,possible but rare (max is 115); likely a typo for some,"kept, left out of age breakdowns"
+W02,patient_id_not_integer,WARN,PatientId has a decimal part,"the ID looks corrupted, so the patient's history can't be linked","kept, left out of the repeat no-show metric"
+W03,sms_below_min_lead,WARN,SMS_received = 1 but booked less than 3 days ahead,goes against the sending pattern seen in the data; would blur the eligible group,"kept, not counted as reminder-eligible"
+I01,handcap_over_1,INFO,"Handcap is 2, 3 or 4","the Kaggle description says True/False, but it looks like a count of disabilities","no action, not used by any metric"
+I02,weekend_appointment,INFO,appointment on a Saturday or Sunday,only one Saturday has appointments; could be a campaign day,no action
+I03,same_patient_same_day,INFO,patient has more than one appointment on that day,several slots in one visit; they usually share the outcome,"counted per slot, noted as a limitation"
+I04,age_zero,INFO,Age = 0,"babies under 1 year, a real group (paediatric visits)",no action

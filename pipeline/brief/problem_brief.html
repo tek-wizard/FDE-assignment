@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clinic No-Show Brief</title>
+<style>
+  @page { size: A4; margin: 9mm 12mm 8mm 12mm; }
+  html, body { margin: 0; background: #fff; }
+  body { font-family: Helvetica, Arial, sans-serif; color: #1d1d1b; font-size: 8pt; line-height: 1.26; }
+  h1 { font-size: 14pt; margin: 0 0 4px; font-style: italic; }
+  h2 { font-size: 9.6pt; margin: 6px 0 3px; }
+  p { margin: 0 0 3px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #1f3350; color: #fff; text-align: left; font-weight: bold; padding: 2.5px 5px; font-size: 7.8pt; }
+  td { padding: 2px 5px; border-bottom: 1px solid #dde1e6; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f6f8; }
+  tr.b td { font-weight: bold; }
+  td.c { text-align: center; width: 5%; }
+  .ps { border: 1px solid #c9ced6; padding: 5px 8px; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Clinic No-Show Problem Analysis</h1>
+
+<h2>1. Situation</h2>
+<p>Public clinics in Vitória, Brazil lose around 3,500 booked appointments a week to no-shows. Patients booked a few days ahead get an SMS reminder, but the team believes it doesn't help, because patients who got an SMS miss more often (27.6% vs 16.7%). Before dropping, keeping or extending reminders, the clinic needs to know whether they work and whether they are actually being sent. The analysis uses the clinics' real appointment records (110,527 appointments, April to June 2016), with public holiday and weather data.</p>
+
+<h2>2. Current workflow and evidence</h2>
+<table>
+  <tr><th>Step</th><th style="width:38%">Current workflow</th><th>Evidence or issue</th></tr>
+  <tr><td class="c">1</td><td>Patient books a slot at the desk or by phone</td><td>35% are same-day bookings; only 4.7% of these are missed</td></tr>
+  <tr><td class="c">2</td><td>Slot is saved in the scheduling system</td><td>Booking time is labelled UTC but matches local clinic hours</td></tr>
+  <tr class="b"><td class="c">3</td><td>SMS reminder is sent</td><td>Only if booked 3+ days ahead; no SMS at all on 7 days (May 9, 13, 16-20)</td></tr>
+  <tr><td class="c">4</td><td>Appointment day</td><td>No time of day recorded; May 23 and 27 have no appointments</td></tr>
+  <tr class="b"><td class="c">5</td><td>Patient attends or does not show</td><td>28.5% of advance bookings are missed</td></tr>
+  <tr><td class="c">6</td><td>Patient rebooks</td><td>5% of patients account for 35% of all no-shows</td></tr>
+</table>
+<p style="margin-top:3px"><b>Main bottleneck.</b> The no-show at step 5, driven by how far ahead the slot is booked (step 1) and whether the reminder goes out (step 3). No-shows rise from 4.7% for same-day bookings to 33% for bookings 31+ days ahead.</p>
+
+<h2>3. Stakeholders</h2>
+<table>
+  <tr><th style="width:19%">Stakeholder</th><th style="width:24%">Goal</th><th style="width:25%">Constraint</th><th>Key question</th></tr>
+  <tr><td><b>Operations manager</b> (owner)</td><td>Fewer wasted slots</td><td>Fixed budget, no new staff</td><td>Is the SMS worth paying for?</td></tr>
+  <tr><td><b>Reception staff</b></td><td>A short call list, not a report</td><td>Little spare time per desk</td><td>How many calls a day can each desk make?</td></tr>
+  <tr><td><b>Doctors and nurses</b></td><td>A full clinic day</td><td>No double-booking without a rule</td><td>Would overbooking be acceptable?</td></tr>
+  <tr><td><b>Patients</b></td><td>Care on time, easy rebooking</td><td>Phone access unknown</td><td>Is the reminder clear and does it arrive?</td></tr>
+  <tr><td><b>SMS vendor / city IT</b></td><td>A clear sending rule</td><td>No one watches daily send volume</td><td>Why did 7 days send nothing?</td></tr>
+</table>
+
+<h2>4. Evidence map</h2>
+<table>
+  <tr><th style="width:17%">Item</th><th style="width:37%">Current view</th><th style="width:11%">Status</th><th>How to verify</th></tr>
+  <tr><td>SMS sending rule</td><td>Never sent when booked under 3 days ahead</td><td>MEASURED</td><td>0 of 50,501 rows; confirm with vendor</td></tr>
+  <tr class="b"><td>Reminder effect</td><td>SMS patients miss 5.4 pts less at the same lead time</td><td>MEASURED</td><td>Outage days give 4.3 pts; confirm in a controlled test</td></tr>
+  <tr><td>Weather</td><td>Too few rainy days (2) to tell</td><td>WEAK</td><td>18.9% rainy vs 20.3% dry; recheck later</td></tr>
+  <tr><td>Same-day bookings</td><td>Mostly walk-ins</td><td>ASSUMPTION</td><td>Ask reception how same-day slots are made</td></tr>
+  <tr><td>Reminder outage</td><td>Vendor failure or export gap</td><td>UNKNOWN</td><td>Vendor send logs for May 9-20</td></tr>
+  <tr><td>Patients with no SMS</td><td>18% of eligible patients on normal days; no phone?</td><td>UNKNOWN</td><td>Check the patient register</td></tr>
+  <tr><td>Empty weekdays</td><td>May 23 and 27 closed, or missing from the export</td><td>UNKNOWN</td><td>Ask managers; only May 26 is a holiday</td></tr>
+</table>
+
+<h2>5. Problem statement</h2>
+<div class="ps">Advance-booked appointments at Vitória's public clinics end in a no-show 28.5% of the time. The clinic reads its data as "SMS reminders don't work", but reminders only go to patients booked 3+ days ahead, who miss most often anyway, and on 7 days no reminders were sent at all. The clinic needs a reliable, repeatable view of whether reminders reduce no-shows and whether they are delivered, so it can decide to drop, fix or extend them.</div>
+
+<h2>6. KPI and supporting metrics</h2>
+<table>
+  <tr><th style="width:8%">Role</th><th style="width:45%">Metric</th><th style="width:20%">Baseline (6 weeks)</th><th>Decision trigger</th></tr>
+  <tr class="b"><td>KPI</td><td>No-show rate of appointments booked 1+ days ahead</td><td>28.5%</td><td>A week above 30%</td></tr>
+  <tr><td>S1</td><td>Reminder coverage of eligible appointments (booked 3+ days ahead)</td><td>59.1% (81.7% normal days)</td><td>A day below 50%, or a week below 70%</td></tr>
+  <tr><td>S2</td><td>Reminder effect at the same lead time</td><td>5.4 points</td><td>Below 1 point: don't scale SMS</td></tr>
+  <tr><td>S3</td><td>Share of no-shows from patients with 2+ no-shows</td><td>35.3%</td><td>Sizes the reception call list</td></tr>
+  <tr><td>S4</td><td>Advance bookings made 15+ days ahead</td><td>38.6%</td><td>Context for slot policy</td></tr>
+</table>
+
+<h2>7. MVP scope and success</h2>
+<table>
+  <tr><th style="width:18%">Area</th><th>Scope</th></tr>
+  <tr><td><b>In scope</b></td><td>A weekly pipeline (retrieve, validate, model, metrics), a daily alert when reminder coverage falls below 50%, and a weekly call list of patients with 2+ earlier no-shows</td></tr>
+  <tr><td><b>Out of scope</b></td><td>No-show prediction or ML, overbooking rules, SMS wording, changing vendor, cost figures</td></tr>
+  <tr><td><b>Success</b></td><td>In a 4-week test against a control group (fix outages, send SMS to 1-2 day bookings, call repeat no-shows), the KPI falls by at least 2 points (to 26.5% or lower), coverage stays above 80% every day, and opt-outs do not rise</td></tr>
+</table>
+
+
+</body>
+</html>

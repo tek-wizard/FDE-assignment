@@ -1,0 +1,8 @@
+week_start,valid_appointments,advance_booked,advance_no_shows,reminder_eligible,reminders_received,booked_over_14_days,same_day,same_day_no_shows,open_days,outage_days,kpi_no_show_pct,reminder_coverage_pct,booked_over_14_days_pct,same_day_no_show_pct,triggers_fired,call_list_size
+2016-04-25,3235,2182,601,1619,1275,1018,1053,32,1,0,27.54,78.75,46.65,3.04,none,0
+2016-05-02,20949,13540,3875,10942,8868,4682,7409,389,5,0,28.62,81.05,34.58,5.25,none,42
+2016-05-09,21721,14037,4208,11539,5421,4711,7684,438,6,2,29.98,46.98,33.56,5.7,reminder coverage below 70%,201
+2016-05-16,21455,14183,4340,11714,0,5311,7272,324,5,5,30.6,0.0,37.45,4.46,KPI above 30%; reminder coverage below 70%,455
+2016-05-23,7918,4931,1445,4736,3933,1948,2987,125,2,0,29.3,83.04,39.51,4.18,none,243
+2016-05-30,21657,14200,3764,11603,9572,6377,7457,310,5,0,26.51,82.5,44.91,4.16,none,805
+2016-06-06,13586,8886,2289,7868,6413,3702,4700,174,3,0,25.76,81.51,41.66,3.7,none,572

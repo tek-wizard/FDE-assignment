@@ -1,0 +1,185 @@
+Pipeline runs (console output, the same lines also go to logs/pipeline.log)
+
+################ Run 1: clean start, nothing downloaded yet
+$ python run_pipeline.py
+2026-09-25 18:20:42 | INFO    | run_pipeline | ===== pipeline run start =====
+2026-09-25 18:20:44 | INFO    | stage1_retrieve | downloaded appointments_may2016.csv from alteryx (10,739,535 bytes, sha256 ok)
+2026-09-25 18:20:45 | INFO    | stage1_retrieve | appointment CSV: 110,527 rows, appointment dates 2016-04-29 .. 2016-06-08
+2026-09-25 18:20:45 | INFO    | stage1_retrieve | API holidays: saved 14 records (2,552 bytes)
+2026-09-25 18:20:46 | INFO    | stage1_retrieve | API weather: saved 41 records (1,287 bytes)
+2026-09-25 18:20:46 | INFO    | stage1_retrieve | retrieve done: 1 CSV file, 2 API responses
+2026-09-25 18:20:46 | INFO    | run_pipeline | stage1_retrieve.py finished with exit code 0 in 3.3s
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule F01 appointment_before_booking (FAIL): 5 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule F02 age_negative (FAIL): 1 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule W01 age_over_100 (WARN): 7 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule W02 patient_id_not_integer (WARN): 5 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule I01 handcap_over_1 (INFO): 199 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule I02 weekend_appointment (INFO): 39 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule I03 same_patient_same_day (INFO): 16,200 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | rule I04 age_zero (INFO): 3,539 rows
+2026-09-25 18:20:46 | INFO    | stage2_validate | validate done: 110,527 rows, 6 excluded by FAIL rules (0.005%), report in outputs/validation_report.csv
+2026-09-25 18:20:46 | INFO    | run_pipeline | stage2_validate.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:47 | WARNING | stage3_model | check weekdays_without_appointments_explained: WARN (holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27'])
+2026-09-25 18:20:47 | WARNING | stage3_model | check reminder_coverage_above_outage_level: WARN (7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20'])
+2026-09-25 18:20:47 | INFO    | stage3_model | check weather_covers_every_appointment_day: PASS (27 of 27 days)
+2026-09-25 18:20:47 | INFO    | stage3_model | model done: {"fact_appointment": 110527, "dim_patient": 62299, "dim_date": 41, "appointment_flag": 19995, "appointment_event": 256536}; checks 8/10 PASS
+2026-09-25 18:20:47 | INFO    | run_pipeline | stage3_model.py finished with exit code 0 in 1.0s
+2026-09-25 18:20:48 | INFO    | stage4_metrics | weekly_metrics.csv is identical to the previous run
+2026-09-25 18:20:48 | INFO    | stage4_metrics | call list for week 2016-06-06: 572 appointments written to data/processed/call_list.csv
+2026-09-25 18:20:48 | INFO    | stage4_metrics | week 2016-04-25: KPI 27.54%, coverage 78.75%, 0 outage day(s)
+2026-09-25 18:20:48 | INFO    | stage4_metrics | week 2016-05-02: KPI 28.62%, coverage 81.05%, 0 outage day(s)
+2026-09-25 18:20:48 | WARNING | stage4_metrics | week 2016-05-09: KPI 29.98%, coverage 46.98%, 2 outage day(s) [trigger: reminder coverage below 70%]
+2026-09-25 18:20:48 | WARNING | stage4_metrics | week 2016-05-16: KPI 30.6%, coverage 0.0%, 5 outage day(s) [trigger: KPI above 30%; reminder coverage below 70%]
+2026-09-25 18:20:48 | INFO    | stage4_metrics | week 2016-05-23: KPI 29.3%, coverage 83.04%, 0 outage day(s)
+2026-09-25 18:20:48 | INFO    | stage4_metrics | week 2016-05-30: KPI 26.51%, coverage 82.5%, 0 outage day(s)
+2026-09-25 18:20:48 | INFO    | stage4_metrics | week 2016-06-06: KPI 25.76%, coverage 81.51%, 0 outage day(s)
+2026-09-25 18:20:49 | INFO    | stage4_metrics | metrics done: KPI 28.52% pooled, reminder gap 5.4 pts (naive view 27.57% vs 16.7%), outputs in outputs/
+2026-09-25 18:20:49 | INFO    | run_pipeline | stage4_metrics.py finished with exit code 0 in 1.4s
+2026-09-25 18:20:49 | INFO    | run_pipeline | ===== pipeline run OK in 6.4s =====
+exit code: 0
+
+################ Run 2: rerun straight away (download skipped, APIs cached, metrics identical)
+$ python run_pipeline.py
+2026-09-25 18:20:49 | INFO    | run_pipeline | ===== pipeline run start =====
+2026-09-25 18:20:49 | INFO    | stage1_retrieve | appointments_may2016.csv: already present and matches the pinned sha256, skipping download
+2026-09-25 18:20:49 | INFO    | stage1_retrieve | appointment CSV: 110,527 rows, appointment dates 2016-04-29 .. 2016-06-08
+2026-09-25 18:20:49 | INFO    | stage1_retrieve | API holidays: using cached response (14 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:49 | INFO    | stage1_retrieve | API weather: using cached response (41 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:49 | INFO    | stage1_retrieve | retrieve done: 1 CSV file, 2 API responses
+2026-09-25 18:20:49 | INFO    | run_pipeline | stage1_retrieve.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule F01 appointment_before_booking (FAIL): 5 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule F02 age_negative (FAIL): 1 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule W01 age_over_100 (WARN): 7 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule W02 patient_id_not_integer (WARN): 5 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule I01 handcap_over_1 (INFO): 199 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule I02 weekend_appointment (INFO): 39 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule I03 same_patient_same_day (INFO): 16,200 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | rule I04 age_zero (INFO): 3,539 rows
+2026-09-25 18:20:50 | INFO    | stage2_validate | validate done: 110,527 rows, 6 excluded by FAIL rules (0.005%), report in outputs/validation_report.csv
+2026-09-25 18:20:50 | INFO    | run_pipeline | stage2_validate.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:51 | WARNING | stage3_model | check weekdays_without_appointments_explained: WARN (holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27'])
+2026-09-25 18:20:51 | WARNING | stage3_model | check reminder_coverage_above_outage_level: WARN (7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20'])
+2026-09-25 18:20:51 | INFO    | stage3_model | check weather_covers_every_appointment_day: PASS (27 of 27 days)
+2026-09-25 18:20:51 | INFO    | stage3_model | model done: {"fact_appointment": 110527, "dim_patient": 62299, "dim_date": 41, "appointment_flag": 19995, "appointment_event": 256536}; checks 8/10 PASS
+2026-09-25 18:20:51 | INFO    | run_pipeline | stage3_model.py finished with exit code 0 in 1.0s
+2026-09-25 18:20:52 | INFO    | stage4_metrics | weekly_metrics.csv is identical to the previous run
+2026-09-25 18:20:52 | INFO    | stage4_metrics | call list for week 2016-06-06: 572 appointments written to data/processed/call_list.csv
+2026-09-25 18:20:52 | INFO    | stage4_metrics | week 2016-04-25: KPI 27.54%, coverage 78.75%, 0 outage day(s)
+2026-09-25 18:20:52 | INFO    | stage4_metrics | week 2016-05-02: KPI 28.62%, coverage 81.05%, 0 outage day(s)
+2026-09-25 18:20:52 | WARNING | stage4_metrics | week 2016-05-09: KPI 29.98%, coverage 46.98%, 2 outage day(s) [trigger: reminder coverage below 70%]
+2026-09-25 18:20:52 | WARNING | stage4_metrics | week 2016-05-16: KPI 30.6%, coverage 0.0%, 5 outage day(s) [trigger: KPI above 30%; reminder coverage below 70%]
+2026-09-25 18:20:52 | INFO    | stage4_metrics | week 2016-05-23: KPI 29.3%, coverage 83.04%, 0 outage day(s)
+2026-09-25 18:20:52 | INFO    | stage4_metrics | week 2016-05-30: KPI 26.51%, coverage 82.5%, 0 outage day(s)
+2026-09-25 18:20:52 | INFO    | stage4_metrics | week 2016-06-06: KPI 25.76%, coverage 81.51%, 0 outage day(s)
+2026-09-25 18:20:52 | INFO    | stage4_metrics | metrics done: KPI 28.52% pooled, reminder gap 5.4 pts (naive view 27.57% vs 16.7%), outputs in outputs/
+2026-09-25 18:20:52 | INFO    | run_pipeline | stage4_metrics.py finished with exit code 0 in 1.4s
+2026-09-25 18:20:52 | INFO    | run_pipeline | ===== pipeline run OK in 3.5s =====
+exit code: 0
+
+################ Run 3: I appended one byte to data/raw/appointments_may2016.csv to fake a corrupted file
+$ python run_pipeline.py
+2026-09-25 18:20:52 | INFO    | run_pipeline | ===== pipeline run start =====
+2026-09-25 18:20:53 | WARNING | stage1_retrieve | appointments_may2016.csv: local file does not match the pinned sha256, downloading again
+2026-09-25 18:20:54 | INFO    | stage1_retrieve | downloaded appointments_may2016.csv from alteryx (10,739,535 bytes, sha256 ok)
+2026-09-25 18:20:54 | INFO    | stage1_retrieve | appointment CSV: 110,527 rows, appointment dates 2016-04-29 .. 2016-06-08
+2026-09-25 18:20:54 | INFO    | stage1_retrieve | API holidays: using cached response (14 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:54 | INFO    | stage1_retrieve | API weather: using cached response (41 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:54 | INFO    | stage1_retrieve | retrieve done: 1 CSV file, 2 API responses
+2026-09-25 18:20:54 | INFO    | run_pipeline | stage1_retrieve.py finished with exit code 0 in 1.5s
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule F01 appointment_before_booking (FAIL): 5 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule F02 age_negative (FAIL): 1 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule W01 age_over_100 (WARN): 7 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule W02 patient_id_not_integer (WARN): 5 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule I01 handcap_over_1 (INFO): 199 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule I02 weekend_appointment (INFO): 39 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule I03 same_patient_same_day (INFO): 16,200 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | rule I04 age_zero (INFO): 3,539 rows
+2026-09-25 18:20:54 | INFO    | stage2_validate | validate done: 110,527 rows, 6 excluded by FAIL rules (0.005%), report in outputs/validation_report.csv
+2026-09-25 18:20:54 | INFO    | run_pipeline | stage2_validate.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:55 | WARNING | stage3_model | check weekdays_without_appointments_explained: WARN (holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27'])
+2026-09-25 18:20:55 | WARNING | stage3_model | check reminder_coverage_above_outage_level: WARN (7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20'])
+2026-09-25 18:20:55 | INFO    | stage3_model | check weather_covers_every_appointment_day: PASS (27 of 27 days)
+2026-09-25 18:20:55 | INFO    | stage3_model | model done: {"fact_appointment": 110527, "dim_patient": 62299, "dim_date": 41, "appointment_flag": 19995, "appointment_event": 256536}; checks 8/10 PASS
+2026-09-25 18:20:55 | INFO    | run_pipeline | stage3_model.py finished with exit code 0 in 1.0s
+2026-09-25 18:20:57 | INFO    | stage4_metrics | weekly_metrics.csv is identical to the previous run
+2026-09-25 18:20:57 | INFO    | stage4_metrics | call list for week 2016-06-06: 572 appointments written to data/processed/call_list.csv
+2026-09-25 18:20:57 | INFO    | stage4_metrics | week 2016-04-25: KPI 27.54%, coverage 78.75%, 0 outage day(s)
+2026-09-25 18:20:57 | INFO    | stage4_metrics | week 2016-05-02: KPI 28.62%, coverage 81.05%, 0 outage day(s)
+2026-09-25 18:20:57 | WARNING | stage4_metrics | week 2016-05-09: KPI 29.98%, coverage 46.98%, 2 outage day(s) [trigger: reminder coverage below 70%]
+2026-09-25 18:20:57 | WARNING | stage4_metrics | week 2016-05-16: KPI 30.6%, coverage 0.0%, 5 outage day(s) [trigger: KPI above 30%; reminder coverage below 70%]
+2026-09-25 18:20:57 | INFO    | stage4_metrics | week 2016-05-23: KPI 29.3%, coverage 83.04%, 0 outage day(s)
+2026-09-25 18:20:57 | INFO    | stage4_metrics | week 2016-05-30: KPI 26.51%, coverage 82.5%, 0 outage day(s)
+2026-09-25 18:20:57 | INFO    | stage4_metrics | week 2016-06-06: KPI 25.76%, coverage 81.51%, 0 outage day(s)
+2026-09-25 18:20:57 | INFO    | stage4_metrics | metrics done: KPI 28.52% pooled, reminder gap 5.4 pts (naive view 27.57% vs 16.7%), outputs in outputs/
+2026-09-25 18:20:57 | INFO    | run_pipeline | stage4_metrics.py finished with exit code 0 in 1.4s
+2026-09-25 18:20:57 | INFO    | run_pipeline | ===== pipeline run OK in 4.4s =====
+exit code: 0
+
+################ Run 4: a very strict FAIL limit (0.001%) to show a HELD run. The real FAIL share is 0.005%
+$ python run_pipeline.py --max-fail-share 0.00001
+2026-09-25 18:20:57 | INFO    | run_pipeline | ===== pipeline run start =====
+2026-09-25 18:20:57 | INFO    | stage1_retrieve | appointments_may2016.csv: already present and matches the pinned sha256, skipping download
+2026-09-25 18:20:57 | INFO    | stage1_retrieve | appointment CSV: 110,527 rows, appointment dates 2016-04-29 .. 2016-06-08
+2026-09-25 18:20:57 | INFO    | stage1_retrieve | API holidays: using cached response (14 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:57 | INFO    | stage1_retrieve | API weather: using cached response (41 records, use --refresh-api to re-fetch)
+2026-09-25 18:20:57 | INFO    | stage1_retrieve | retrieve done: 1 CSV file, 2 API responses
+2026-09-25 18:20:57 | INFO    | run_pipeline | stage1_retrieve.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule F01 appointment_before_booking (FAIL): 5 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule F02 age_negative (FAIL): 1 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule W01 age_over_100 (WARN): 7 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule W02 patient_id_not_integer (WARN): 5 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule I01 handcap_over_1 (INFO): 199 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule I02 weekend_appointment (INFO): 39 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule I03 same_patient_same_day (INFO): 16,200 rows
+2026-09-25 18:20:58 | INFO    | stage2_validate | rule I04 age_zero (INFO): 3,539 rows
+2026-09-25 18:20:58 | ERROR   | stage2_validate | check fail_share_below_limit FAILED (0.005% of rows hit a FAIL rule (limit 0.001%)), the run will be held
+2026-09-25 18:20:58 | INFO    | stage2_validate | validate done: 110,527 rows, 6 excluded by FAIL rules (0.005%), report in outputs/validation_report.csv
+2026-09-25 18:20:58 | INFO    | run_pipeline | stage2_validate.py finished with exit code 0 in 0.6s
+2026-09-25 18:20:59 | WARNING | stage3_model | check weekdays_without_appointments_explained: WARN (holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27'])
+2026-09-25 18:20:59 | WARNING | stage3_model | check reminder_coverage_above_outage_level: WARN (7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20'])
+2026-09-25 18:20:59 | INFO    | stage3_model | check weather_covers_every_appointment_day: PASS (27 of 27 days)
+2026-09-25 18:20:59 | INFO    | stage3_model | model done: {"fact_appointment": 110527, "dim_patient": 62299, "dim_date": 41, "appointment_flag": 19995, "appointment_event": 256536}; checks 7/10 PASS
+2026-09-25 18:20:59 | INFO    | run_pipeline | stage3_model.py finished with exit code 0 in 1.0s
+2026-09-25 18:21:00 | ERROR   | stage4_metrics | run HELD, file checks failed: ['fail_share_below_limit']; metric values left blank
+2026-09-25 18:21:00 | INFO    | stage4_metrics | weekly_metrics.csv changed since the previous run
+2026-09-25 18:21:00 | INFO    | run_pipeline | stage4_metrics.py finished with exit code 2 in 1.1s
+2026-09-25 18:21:00 | ERROR   | run_pipeline | pipeline finished but the run was HELD, see outputs/run_checks.csv
+exit code: 2
+
+################ Run 5: back to the normal limit, so outputs/ holds the full published version again
+$ python run_pipeline.py
+2026-09-25 18:21:00 | INFO    | run_pipeline | ===== pipeline run start =====
+2026-09-25 18:21:00 | INFO    | stage1_retrieve | appointments_may2016.csv: already present and matches the pinned sha256, skipping download
+2026-09-25 18:21:01 | INFO    | stage1_retrieve | appointment CSV: 110,527 rows, appointment dates 2016-04-29 .. 2016-06-08
+2026-09-25 18:21:01 | INFO    | stage1_retrieve | API holidays: using cached response (14 records, use --refresh-api to re-fetch)
+2026-09-25 18:21:01 | INFO    | stage1_retrieve | API weather: using cached response (41 records, use --refresh-api to re-fetch)
+2026-09-25 18:21:01 | INFO    | stage1_retrieve | retrieve done: 1 CSV file, 2 API responses
+2026-09-25 18:21:01 | INFO    | run_pipeline | stage1_retrieve.py finished with exit code 0 in 0.6s
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule F01 appointment_before_booking (FAIL): 5 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule F02 age_negative (FAIL): 1 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule W01 age_over_100 (WARN): 7 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule W02 patient_id_not_integer (WARN): 5 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule I01 handcap_over_1 (INFO): 199 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule I02 weekend_appointment (INFO): 39 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule I03 same_patient_same_day (INFO): 16,200 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | rule I04 age_zero (INFO): 3,539 rows
+2026-09-25 18:21:01 | INFO    | stage2_validate | validate done: 110,527 rows, 6 excluded by FAIL rules (0.005%), report in outputs/validation_report.csv
+2026-09-25 18:21:01 | INFO    | run_pipeline | stage2_validate.py finished with exit code 0 in 0.6s
+2026-09-25 18:21:02 | WARNING | stage3_model | check weekdays_without_appointments_explained: WARN (holidays: ['2016-05-26 Corpus Christi']; not explained: ['2016-05-23', '2016-05-27'])
+2026-09-25 18:21:02 | WARNING | stage3_model | check reminder_coverage_above_outage_level: WARN (7 appointment days under 50%: ['2016-05-09', '2016-05-13', '2016-05-16', '2016-05-17', '2016-05-18', '2016-05-19', '2016-05-20'])
+2026-09-25 18:21:02 | INFO    | stage3_model | check weather_covers_every_appointment_day: PASS (27 of 27 days)
+2026-09-25 18:21:02 | INFO    | stage3_model | model done: {"fact_appointment": 110527, "dim_patient": 62299, "dim_date": 41, "appointment_flag": 19995, "appointment_event": 256536}; checks 8/10 PASS
+2026-09-25 18:21:02 | INFO    | run_pipeline | stage3_model.py finished with exit code 0 in 1.0s
+2026-09-25 18:21:03 | INFO    | stage4_metrics | weekly_metrics.csv changed since the previous run
+2026-09-25 18:21:03 | INFO    | stage4_metrics | call list for week 2016-06-06: 572 appointments written to data/processed/call_list.csv
+2026-09-25 18:21:03 | INFO    | stage4_metrics | week 2016-04-25: KPI 27.54%, coverage 78.75%, 0 outage day(s)
+2026-09-25 18:21:03 | INFO    | stage4_metrics | week 2016-05-02: KPI 28.62%, coverage 81.05%, 0 outage day(s)
+2026-09-25 18:21:03 | WARNING | stage4_metrics | week 2016-05-09: KPI 29.98%, coverage 46.98%, 2 outage day(s) [trigger: reminder coverage below 70%]
+2026-09-25 18:21:03 | WARNING | stage4_metrics | week 2016-05-16: KPI 30.6%, coverage 0.0%, 5 outage day(s) [trigger: KPI above 30%; reminder coverage below 70%]
+2026-09-25 18:21:03 | INFO    | stage4_metrics | week 2016-05-23: KPI 29.3%, coverage 83.04%, 0 outage day(s)
+2026-09-25 18:21:03 | INFO    | stage4_metrics | week 2016-05-30: KPI 26.51%, coverage 82.5%, 0 outage day(s)
+2026-09-25 18:21:03 | INFO    | stage4_metrics | week 2016-06-06: KPI 25.76%, coverage 81.51%, 0 outage day(s)
+2026-09-25 18:21:04 | INFO    | stage4_metrics | metrics done: KPI 28.52% pooled, reminder gap 5.4 pts (naive view 27.57% vs 16.7%), outputs in outputs/
+2026-09-25 18:21:04 | INFO    | run_pipeline | stage4_metrics.py finished with exit code 0 in 1.4s
+2026-09-25 18:21:04 | INFO    | run_pipeline | ===== pipeline run OK in 3.6s =====
+exit code: 0

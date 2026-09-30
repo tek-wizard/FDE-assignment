@@ -1,0 +1,16 @@
+# local only
+demo_video_script.md
+notes/
+
+# data is downloaded by the pipeline on the first run, not shared
+pipeline/data/
+pipeline/logs/
+
+# python / jupyter / os
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+*.part

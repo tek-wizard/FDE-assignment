@@ -1,0 +1,5 @@
+lead_band,appointments,no_show_pct_with_sms,no_show_pct_without_sms,gap_points
+3-7 days,20247,23.76,26.59,2.83
+8-14 days,12025,28.11,33.76,5.65
+15-30 days,17371,29.8,36.87,7.07
+31+ days,10378,30.2,37.53,7.32
