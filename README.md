@@ -37,10 +37,10 @@ checks the checksum and uses it.
 
 | Submission item | File |
 |---|---|
-| 1-page problem brief | [problem_brief.pdf](problem_brief.pdf) |
+| Problem brief (2 pages) | [problem_brief.pdf](problem_brief.pdf) |
 | Working notebook / repo | [pipeline/notebooks/analysis.ipynb](pipeline/notebooks/analysis.ipynb) and the [pipeline/](pipeline/) folder |
 | Pipeline artifact (repeatable run with checks and logging) | [pipeline/run_pipeline.py](pipeline/run_pipeline.py); real runs in [pipeline/outputs/pipeline_run_log.txt](pipeline/outputs/pipeline_run_log.txt); check results in [pipeline/outputs/run_checks.csv](pipeline/outputs/run_checks.csv) |
-| 5-min demo | video link (to be added) |
+| Demo video | https://www.loom.com/share/54ed45edf2b348ea987dac63c069a418 |
 
 | Skill area | Evidence |
 |---|---|
@@ -168,7 +168,7 @@ jupyter nbconvert --to notebook --execute --inplace analysis.ipynb
 Exit codes: 0 = published, 1 = a stage failed, 2 = run held.
 
 ```
-problem_brief.pdf              the 1-page problem brief
+problem_brief.pdf              the problem brief (2 pages)
 pipeline/
   run_pipeline.py              runs the 4 stages in order
   scripts/

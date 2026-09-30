@@ -22,6 +22,7 @@
 <body>
 
 <h1>Clinic No-Show Problem Analysis</h1>
+<p style="color:#555;margin-bottom:4px">Prateek Singh, Roll No. 10135 &middot; FDE Assignment (internship-exempted)</p>
 
 <h2>1. Situation</h2>
 <p>Public clinics in Vitória, Brazil lose around 3,500 booked appointments a week to no-shows. Patients booked a few days ahead get an SMS reminder, but the team believes it doesn't help, because patients who got an SMS miss more often (27.6% vs 16.7%). Before dropping, keeping or extending reminders, the clinic needs to know whether they work and whether they are actually being sent. The analysis uses the clinics' real appointment records (110,527 appointments, April to June 2016), with public holiday and weather data.</p>
@@ -81,6 +82,80 @@
   <tr><td><b>Success</b></td><td>In a 4-week test against a control group (fix outages, send SMS to 1-2 day bookings, call repeat no-shows), the KPI falls by at least 2 points (to 26.5% or lower), coverage stays above 80% every day, and opt-outs do not rise</td></tr>
 </table>
 
+<div style="page-break-before:always"></div>
+
+<h2>8. Why this is the right problem to solve first</h2>
+<p>I listed every problem the data showed and compared them before building anything. I did not start with a prediction model or an AI tool: the first question was which problem is worth fixing, and whether the data can support it.</p>
+<table>
+  <tr><th style="width:23%">Candidate problem</th><th style="width:27%">Size (6 weeks)</th><th style="width:25%">Can we act on it now?</th><th>Decision</th></tr>
+  <tr class="b"><td>SMS reminders judged "not working", and not sent on 7 days</td><td>60,021 eligible bookings; 24,539 got no SMS</td><td>Yes: the SMS already exists, the fix is a daily check</td><td>Solve first</td></tr>
+  <tr><td>Repeat no-show patients</td><td>5% of patients, 35% of no-shows</td><td>Yes: a short call list for reception</td><td>Part of the MVP</td></tr>
+  <tr><td>Long lead times</td><td>38.6% of advance bookings are 15+ days out</td><td>Slowly: needs a slot policy change</td><td>Later</td></tr>
+  <tr><td>Rain / weather</td><td>18.9% vs 20.3%, only 2 rainy days</td><td>No: can't control it, weak evidence</td><td>Not now</td></tr>
+  <tr><td>No-show prediction model</td><td>no send times, no clinic or doctor fields</td><td>No: basics are unreliable first</td><td>Out of scope</td></tr>
+</table>
+<p style="margin-top:3px"><b>Why reminders come first.</b> (1) The clinic is about to decide from a misleading number: the naive comparison says SMS makes things worse, so they may stop paying for it. (2) It is cheap: the reminder is already paid for, and a daily coverage alert costs almost nothing. (3) It is big: reminding the 24,539 missed patients would have meant about 1,325 fewer no-shows, about 1.8 KPI points. (4) The other fixes depend on it: a call list or an overbooking rule can't be judged if reminders fail silently.</p>
+
+<h2>9. Where the problem sits in the workflow</h2>
+<svg viewBox="0 0 740 92" width="100%" height="92" font-family="Helvetica, Arial, sans-serif" font-size="9.5">
+  <defs><marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#1f3350"/></marker></defs>
+  <g fill="#f4f6f8" stroke="#1f3350" stroke-width="1">
+    <rect x="2" y="22" width="104" height="34" rx="3"/><rect x="128" y="22" width="104" height="34" rx="3"/>
+    <rect x="254" y="22" width="104" height="34" rx="3" fill="#fdecea" stroke="#b3261e"/><rect x="380" y="22" width="104" height="34" rx="3"/>
+    <rect x="506" y="22" width="104" height="34" rx="3" fill="#fdecea" stroke="#b3261e"/><rect x="632" y="22" width="104" height="34" rx="3"/>
+  </g>
+  <g fill="#1d1d1b" text-anchor="middle">
+    <text x="54" y="37">1. Patient books</text><text x="54" y="49">(lead time set)</text>
+    <text x="180" y="37">2. Slot saved</text><text x="180" y="49">in scheduling system</text>
+    <text x="306" y="37">3. SMS reminder</text><text x="306" y="49">only if 3+ days ahead</text>
+    <text x="432" y="37">4. Appointment</text><text x="432" y="49">day</text>
+    <text x="558" y="37">5. Attended or</text><text x="558" y="49">no-show (KPI)</text>
+    <text x="684" y="37">6. Rebook</text><text x="684" y="49">(repeat no-shows)</text>
+  </g>
+  <g stroke="#1f3350" stroke-width="1.2" marker-end="url(#a)">
+    <line x1="106" y1="39" x2="126" y2="39"/><line x1="232" y1="39" x2="252" y2="39"/><line x1="358" y1="39" x2="378" y2="39"/>
+    <line x1="484" y1="39" x2="504" y2="39"/><line x1="610" y1="39" x2="630" y2="39"/>
+  </g>
+  <g fill="#b3261e" text-anchor="middle" font-weight="bold">
+    <text x="306" y="14">0% sent on 7 days; 18% of eligible missed</text>
+    <text x="558" y="14">28.5% of advance bookings missed</text>
+  </g>
+  <g fill="#555" text-anchor="middle">
+    <text x="54" y="72">4.7% same day to</text><text x="54" y="84">33% at 31+ days</text>
+    <text x="684" y="72">5% of patients =</text><text x="684" y="84">35% of no-shows</text>
+  </g>
+</svg>
+
+<h2>10. Evidence for the main conclusion</h2>
+<p>The naive view: 27.6% no-show with an SMS vs 16.7% without. But SMS only goes to bookings 3+ days ahead, and those miss more anyway. Compared at the same lead time, the picture flips. The outage days give a second check, because on those days nobody got an SMS whoever they were.</p>
+<table>
+  <tr><th style="width:16%">Lead time</th><th style="width:14%">Appointments</th><th style="width:14%">With SMS</th><th style="width:14%">Without SMS</th><th style="width:12%">Gap</th><th style="width:15%">Outage-day gap</th></tr>
+  <tr><td>3-7 days</td><td>20,247</td><td>23.8%</td><td>26.6%</td><td>2.8 pts</td><td>1.9 pts</td></tr>
+  <tr><td>8-14 days</td><td>12,025</td><td>28.1%</td><td>33.8%</td><td>5.7 pts</td><td>5.8 pts</td></tr>
+  <tr><td>15-30 days</td><td>17,371</td><td>29.8%</td><td>36.9%</td><td>7.1 pts</td><td>5.5 pts</td></tr>
+  <tr><td>31+ days</td><td>10,378</td><td>30.2%</td><td>37.5%</td><td>7.3 pts</td><td>5.2 pts</td></tr>
+  <tr class="b"><td>Weighted</td><td>60,021</td><td></td><td></td><td>5.4 pts</td><td>4.3 pts</td></tr>
+</table>
+<p style="margin-top:3px">Both checks point the same way: reminders are linked to about 4-5 points fewer no-shows. It is not a randomised test, so I don't claim it as proven; the next step is a controlled 4-week trial.</p>
+
+<h2>11. Facts, assumptions and unknowns</h2>
+<table>
+  <tr><th style="width:34%">Facts (measured in the data)</th><th style="width:33%">Assumptions (mine, to confirm)</th><th>Unknowns (need the client)</th></tr>
+  <tr><td>110,527 appointments; only 6 rows fail checks</td><td>Booking times are local, although marked UTC (peak at 07h)</td><td>Why no SMS went out on May 9, 13, 16-20</td></tr>
+  <tr><td>No SMS ever sent under 3 days ahead (0 of 50,501)</td><td>Same-day bookings are mostly walk-ins</td><td>Whether "SMS received" means sent or delivered</td></tr>
+  <tr><td>7 appointment days had 0% SMS coverage</td><td>Neighbourhood is where the clinic is</td><td>Why 18% of eligible patients get no SMS (no phone?)</td></tr>
+  <tr><td>May 23 and 27 are empty; only May 26 is a holiday</td><td>Trigger levels are my own, from 6 weeks</td><td>Whether a cancellation is recorded as a no-show</td></tr>
+</table>
+
+<h2>12. What I built and what I recommend</h2>
+<table>
+  <tr><th style="width:18%">Item</th><th>Detail</th></tr>
+  <tr><td><b>Data</b></td><td>Real public data, nothing synthetic: Kaggle "Medical Appointment No Shows" CSV (checksum-pinned), Nager.Date holidays API, Open-Meteo weather API</td></tr>
+  <tr><td><b>Pipeline</b></td><td>retrieve &rarr; validate (12 rules, rows flagged not deleted) &rarr; SQLite model &rarr; metrics in SQL; logging, retries, cached fallbacks, and the run is held (exit 2) if over 2% of rows fail</td></tr>
+  <tr><td><b>Recommend</b></td><td>Keep the SMS; alert when a day's coverage is under 50%; ask the vendor about May 9-20; test SMS for 1-2 day bookings plus reception calls for repeat no-shows</td></tr>
+  <tr><td><b>Limits</b></td><td>Only 6 weeks of 2016 data; outage check is not randomised; no clinic, doctor or time-of-day fields; only national holidays checked</td></tr>
+  <tr><td><b>Links</b></td><td>Repo: <a href="https://github.com/tek-wizard/FDE-assignment">github.com/tek-wizard/FDE-assignment</a> &middot; Demo video: <a href="https://www.loom.com/share/54ed45edf2b348ea987dac63c069a418">loom.com/share/54ed45edf2b348ea987dac63c069a418</a></td></tr>
+</table>
 
 </body>
 </html>

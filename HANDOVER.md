@@ -8,7 +8,7 @@ the first run downloads it.
 
 | Path | What it is |
 |---|---|
-| `problem_brief.pdf` | the 1-page problem brief |
+| `problem_brief.pdf` | the problem brief (2 pages) |
 | `README.md` | the full write-up: problem, KPI, sources, results, what is still unknown |
 | `pipeline/run_pipeline.py` | the pipeline: one command runs all 4 stages |
 | `pipeline/scripts/` | the 4 stages (retrieve, validate, model, metrics) plus the rules and settings |
